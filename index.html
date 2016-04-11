@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Blackjack</title>
+
+    <style type="text/css">
+
+body {
+  background-color: lightgreen;
+  padding-top: 20px;
+}
+
+p {
+  color: white;
+  margin: 10px;
+  font-weight: bold;
+}
+
+#controls {
+  text-align: center;
+  margin: 5px auto
+}
+
+.btn {
+  color: white;
+  background-color: lightblue;
+  width: 70px;
+  border-radius: 10px;
+  padding:10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.box {
+  width: 80vw;
+  height: 40vw;
+  margin: 20px auto;
+  border: 5px solid white;
+  border-radius: 10px;
+}
+
+.box p {
+  position: absolute;
+  z-index: -1;
+}
+
+.box * {
+  float:left
+}
+
+#deck {
+  width: 100px;
+  height: 150px;
+}
+
+.card {
+  width: 20vw;
+  height: 30vw;
+  font-size: 10vw;
+  text-align: center;
+  font-weight: bold;
+  border: 4px solid white;
+  border-radius: 5px;
+  margin: 5vw 0 0 5vw;
+  background-color: #606dbc;
+}
+
+.card span {
+  text-align: center;
+  margin: 4vw;
+}
+
+.card.facedown {
+  background: repeating-linear-gradient(
+    45deg,
+    #606dbc,
+    #606dbc 10px,
+    #465298 10px,
+    #465298 20px
+  );
+}
+
+.card.facedown * {
+  display: none;
+}
+
+    </style>
+
+<body>
+
+  <div id="dealer" class="box">
+    <p>Dealer</p>
+  </div>
+
+  <div id="player" class="box">
+    <p>Player</p>
+  </div>
+
+  <div id="controls">
+    <input type="button" class="btn" id="start" value="Start"/>
+    <input type="button" class="btn" id="hit" value="Hit"/>
+    <input type="button" class="btn" id="stick" value="Stick"/>
+  </div>
+
+
+<script type="text/javascript" src="blackjack.js"></script>
+
+<script type="text/javascript">
+
+</script>
+
+</body>
+</html>
