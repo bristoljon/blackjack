@@ -1,11 +1,3 @@
-/*
-Card Array
-array.shuffle
-player
-dealer
-hand
-compare
-*/
 
 // Helper method for checking presense of card in selection
 Array.prototype.has = function (target) {
@@ -18,9 +10,9 @@ Array.prototype.has = function (target) {
   return found
 }
 
-describe('Blackjack', function () {
+describe('Blackjack', () => {
 
-  beforeEach( function () {
+  beforeEach( () => {
     var el = document.createElement('div');
     el.setAttribute('id','player');
     document.body.appendChild(el);
@@ -32,33 +24,33 @@ describe('Blackjack', function () {
     Blackjack.init()
   });
 
-  describe('Components', function () {
+  describe('Components', () => {
 
-    it('Has a deck array', function () {
+    it('Has a deck array', () => {
       expect(typeof Blackjack.deck).toBe('object');
     })
 
-    it('Has a player object with a hand array', function () {
+    it('Has a player object with a hand array', () => {
       expect(typeof Blackjack.player.hand).toBe('object');
     })
 
-    it('Has a dealer object with a hand array', function () {
+    it('Has a dealer object with a hand array', () => {
       expect(typeof Blackjack.dealer.hand).toBe('object')
     })
 
   });
 
-  describe('Deck', function (){
+  describe('Deck', () =>{
 
     var suits = ['hearts','diams','spades','clubs'],
         vals = ['A',2,3,4,5,6,7,8,9,10,'J','Q','K'];
 
-    it('Generates a deck containing 52 cards', function () {
+    it('Generates a deck containing 52 cards', () => {
       var deck = Blackjack.deck;
       expect(deck.length).toBe(52);
     });
 
-    it('Contains every card from each suit', function () {
+    it('Contains every card from each suit', () => {
       var deck = Blackjack.deck;
       suits.forEach(function (suit) {
         vals.forEach(function (val) {
@@ -68,7 +60,7 @@ describe('Blackjack', function () {
       })
     });
 
-    it('can shuffle the cards', function () {
+    it('can shuffle the cards', () => {
       var deck = Blackjack.deck,
           unchanged = 0,
           shuffled = deck.shuffle();
@@ -89,9 +81,9 @@ describe('Blackjack', function () {
     });
   });
 
-  describe('Dealing', function () {
+  describe('Dealing', () => {
 
-    it('has a method for dealing cards from the deck', function () {
+    it('has a method for dealing cards from the deck', () => {
       expect(Blackjack.deck.length).toBe(52);
       expect(Blackjack.player.hand.length).toBe(0);
 
@@ -100,7 +92,7 @@ describe('Blackjack', function () {
       expect(Blackjack.deck.length).toBe(51);
     });
 
-    it('re/starts by returning dealt cards to the bottom of the deck', function () {
+    it('re/starts by returning dealt cards to the bottom of the deck', () => {
       Blackjack.start();
       var dealt = Blackjack.player.hand.concat(Blackjack.dealer.hand);
 
@@ -114,23 +106,67 @@ describe('Blackjack', function () {
     })
   });
 
-  describe('Gameplay', function () {
-    it('starts by dealing 2 cards to the player and 1 to dealer', function () {
+  describe('Gameplay', () => {
+    it('starts by dealing 2 cards to the player and 1 to dealer', () => {
       Blackjack.start();
       expect(Blackjack.player.hand.length).toBe(2);
       expect(Blackjack.dealer.hand.length).toBe(1);
       expect(Blackjack.deck.length).toBe(49);
     });
 
-    it('detects if a player has blackjack / natural'. function () {
+    it('detects if a player has blackjack / natural'. () => {
       var ace = {suit: 'hearts', value: 'A'},
           king = {suit: 'hearts', value: 'K'};
       Blackjack.player.hand = [ace, king];
     })
+  });
+
+  describe('Scoring', 90 => {
+
+    var ace = {suit: 'hearts', value: 'A'},
+        king = {suit: 'hearts', value: 'K'},
+        eight = {suit: 'hearts', value: 8},
+        two = {suit: 'hearts', value: 2};
+
+    it('A/K === 21', () => {
+      Blackjack.player.hand = [ace, king];
+      expect(Blackjack.player.hand.total()).toBe(21);
+    });
+
+    it('A/K/A === 12', () => {
+      Blackjack.player.hand = [ace, king, ace];
+      expect(Blackjack.player.hand.total()).toBe(12);
+    });
+
+    it('A/A === 12', () => {
+      Blackjack.player.hand = [ace, ace];
+      expect(Blackjack.player.hand.total()).toBe(12);
+    });
+
+    it('A/A/A === 13', () => {
+      Blackjack.player.hand = [ace, ace, ace];
+      expect(Blackjack.player.hand.total()).toBe(13);
+    });
+
+    it('A/A/A/8 === 21', () => {
+      Blackjack.player.hand = [ace, ace, ace, eight];
+      expect(Blackjack.player.hand.total()).toBe(21);
+    });
+
+    it('8/2/A === 21', () => {
+      Blackjack.player.hand = [eight, two, ace];
+      expect(Blackjack.player.hand.total()).toBe(21);
+    });
+
+    it('8/2/A/8 === 21', () => {
+      Blackjack.player.hand = [eight, two, ace, eight];
+      expect(Blackjack.player.hand.total()).toBe(19);
+    });
+
   })
 
 
-  // describe('UI', function () {
+  // describe('UI', () => {
   //
   //   var start = document.getElementById('startgame');
   //
@@ -138,7 +174,7 @@ describe('Blackjack', function () {
   //     expect(start).toBeTruthy();
   //   })
   //
-  //   it("clicking the 'New Game' triggers Blackjack.init()", function () {
+  //   it("clicking the 'New Game' triggers Blackjack.init()", () => {
   //
   //     spyOn(Blackjack, 'init').and.callThrough();
   //
