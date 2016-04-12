@@ -42,7 +42,7 @@ p {
 
 .box {
   width: 80vw;
-  height: 40vw;
+  height: 30vw;
   margin: 20px auto;
   border: 5px solid white;
   border-radius: 10px;
@@ -63,11 +63,12 @@ p {
 }
 
 .card {
-  width: 20vw;
-  height: 30vw;
-  font-size: 10vw;
+  width: 12vw;
+  height: 20vw;
+  font-size: 5vw;
   text-align: center;
   font-weight: bold;
+  padding:0;
   border: 4px solid white;
   border-radius: 5px;
   margin: 5vw 0 0 5vw;
@@ -76,22 +77,21 @@ p {
 
 .card span {
   text-align: center;
-  margin: 4vw;
+  margin: 2vw;
 }
 
-.card.facedown {
-  background: repeating-linear-gradient(
-    45deg,
-    #606dbc,
-    #606dbc 10px,
-    #465298 10px,
-    #465298 20px
-  );
+.status, .score {
+  text-align: center;
+  margin-left: 10vw;
+  font-size:20vw
 }
 
-.card.facedown * {
-  display: none;
+#status {
+  width: 10vw;
+  height: 5vw;
+  margin: 0 auto;
 }
+
 
     </style>
 
@@ -99,10 +99,16 @@ p {
 
   <div id="dealer" class="box">
     <p>Dealer</p>
+    <p class="status"></p>
+    <p class="score"></p>
   </div>
+
+  <div id="status"></div>
 
   <div id="player" class="box">
     <p>Player</p>
+    <p class="status"></p>
+    <p class="score"></p>
   </div>
 
   <div id="controls">

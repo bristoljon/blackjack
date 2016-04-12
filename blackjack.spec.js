@@ -12,14 +12,34 @@ Array.prototype.has = function (target) {
 
 describe('Blackjack', () => {
 
-  beforeEach( () => {
-    var el = document.createElement('div');
-    el.setAttribute('id','player');
-    document.body.appendChild(el);
+  var fix = document.createElement('div');
+  document.body.appendChild(fix);
 
-    el = document.createElement('div');
-    el.setAttribute('id','dealer');
-    document.body.appendChild(el);
+  beforeEach( () => {
+
+    fix.innerHTML = '';
+
+    ['player','dealer'].forEach( player => {
+      var el = document.createElement('div');
+      el.setAttribute('id',player);
+      ['score','status'].forEach( classname => {
+        var div = document.createElement('div');
+        div.setAttribute('class', classname);
+        el.appendChild(div);
+      })
+      fix.appendChild(el);
+    });
+
+    ['stick','hit','start'].forEach( btn => {
+      var el = document.createElement('input');
+      el.setAttribute('type', 'button');
+      el.setAttribute('id', btn);
+      fix.appendChild(el);
+    });
+
+    var el = document.createElement('div');
+    el.setAttribute('id', 'status');
+    fix.appendChild(el);
 
     Blackjack.init()
   });
@@ -38,6 +58,38 @@ describe('Blackjack', () => {
       expect(typeof Blackjack.dealer.hand).toBe('object')
     })
 
+    xit('has a status property to store current status of game', () => {
+      expect(Blackjack.status).toBe('Your Turn');
+    });
+
+    it('status property auto updates DOM on change', () => {
+      Blackjack.status = 'HELLO';
+      var stat = document.getElementById('status');
+      expect(stat.innerHTML).toBe('HELLO');
+    });
+
+  });
+
+  describe('Player', () => {
+    it('has a name property', () => {
+      expect(Blackjack.player.name).toBeDefined();
+    });
+    it('has a hand property', () => {
+      expect(Blackjack.player.hand).toBeDefined();
+    });
+    it('has an element property with a ref to the dom el', () => {
+      expect(Blackjack.player.el).toBeDefined();
+    });
+    it('has a status property that automatically updates the DOM when changed', () => {
+      Blackjack.player.status = 'HELLO';
+      var status = Blackjack.player.el.getElementsByClassName('status')[0];
+      expect(status.innerHTML).toBe('HELLO')
+    });
+    it('has a score property that automatically updates the DOM when changed', () => {
+      Blackjack.player.score = '3';
+      var status = Blackjack.player.el.getElementsByClassName('score')[0];
+      expect(status.innerHTML).toBe('3')
+    });
   });
 
   describe('Deck', () =>{
@@ -87,9 +139,16 @@ describe('Blackjack', () => {
       expect(Blackjack.deck.length).toBe(52);
       expect(Blackjack.player.hand.length).toBe(0);
 
-      Blackjack.deal(Blackjack.player, 1);
+      Blackjack.deal(Blackjack.player);
       expect(Blackjack.player.hand.length).toBe(1);
       expect(Blackjack.deck.length).toBe(51);
+    });
+
+    it("Appends card elements to that player's div element", () => {
+      var cards = Blackjack.player.el.getElementsByClassName('card');
+      expect(cards.length).toBe(0);
+      Blackjack.deal(Blackjack.player);
+      expect(cards.length).toBe(1);
     });
 
     it('re/starts by returning dealt cards to the bottom of the deck', () => {
@@ -104,6 +163,16 @@ describe('Blackjack', () => {
         expect(bottom.has(card)).toBe(true)
       })
     })
+
+    it('removes all card elements from dom on restart', () => {
+      Blackjack.start();
+      var cards = document.getElementsByClassName('card');
+      expect(cards.length).toBe(3);
+
+      Blackjack.start();
+      cards = document.getElementsByClassName('card');
+      expect(cards.length).toBe(3);
+    })
   });
 
   describe('Gameplay', () => {
@@ -114,14 +183,48 @@ describe('Blackjack', () => {
       expect(Blackjack.deck.length).toBe(49);
     });
 
-    it('detects if a player has blackjack / natural'. () => {
-      var ace = {suit: 'hearts', value: 'A'},
-          king = {suit: 'hearts', value: 'K'};
-      Blackjack.player.hand = [ace, king];
-    })
+    it('allows the player to hit', () => {
+      Blackjack.deal(Blackjack.player);
+      expect(Blackjack.player.hand.length).toBe(1);
+    });
+
+    xit('alerts the player when bust', () => {
+      while (Blackjack.player.hand.total() < 21) {
+        Blackjack.deal(Blackjack.player);
+      }
+      var status = Blackjack.player.el.getElementsByClassName('status')[0];
+      expect(status.innerHTML).toBe('BUST');
+    });
+
+    it('deals the dealer until she has a higher or equal score or goes bust', () => {
+      Blackjack.start();
+      Blackjack.stick().then( () => {
+        expect(Blackjack.status).toBe('Game Over');
+        if (Blackjack.player.hand.total() > Blackjack.dealer.hand.total()) {
+          expect(Blackjack.player.status).toBe('WINNER');
+          expect(Blackjack.player.score).toBe(1)
+        }
+        else {
+          expect(Blackjack.player.status).toBe('LOSER')
+          expect(Blackjack.player.score).toBe(0)
+        }
+      })
+    });
+
+    it('prevents the user hitting or sticking if game status is COMPLETE', () => {
+      Blackjack.start();
+      Blackjack.stick().then( () => {
+        var cards = document.getElementsByClassName('card');
+        expect(Blackjack.status).toBe('COMPLETE');
+        Blackjack.deal(Blackjack.player);
+        var now = document.getElementsByClassName('card');
+        expect(cards.length).toBe(now.length);
+      })
+    });
+
   });
 
-  describe('Scoring', 90 => {
+  describe('Hand Scoring', () => {
 
     var ace = {suit: 'hearts', value: 'A'},
         king = {suit: 'hearts', value: 'K'},
@@ -131,6 +234,11 @@ describe('Blackjack', () => {
     it('A/K === 21', () => {
       Blackjack.player.hand = [ace, king];
       expect(Blackjack.player.hand.total()).toBe(21);
+    });
+
+    it('K === 10', () => {
+      Blackjack.player.hand = [king];
+      expect(Blackjack.player.hand.total()).toBe(10);
     });
 
     it('A/K/A === 12', () => {
@@ -165,28 +273,4 @@ describe('Blackjack', () => {
 
   })
 
-
-  // describe('UI', () => {
-  //
-  //   var start = document.getElementById('startgame');
-  //
-  //   it('has a new game button', function() {
-  //     expect(start).toBeTruthy();
-  //   })
-  //
-  //   it("clicking the 'New Game' triggers Blackjack.init()", () => {
-  //
-  //     spyOn(Blackjack, 'init').and.callThrough();
-  //
-  //     var evt = new MouseEvent("click", {
-  //       bubbles: true,
-  //       cancelable: true,
-  //       view: window,
-  //     });
-  //     start.dispatchEvent(evt);
-  //
-  //     expect(Blackjack.init).toHaveBeenCalled();
-  //
-  //   })
-  // })
 })
